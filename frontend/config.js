@@ -1,2 +1,2 @@
-// Configurazione pubblica: nessuna chiave segreta qui.
-window.NOVA_API_BASE = "";
+// API backend pubblica. Nessuna chiave segreta nel frontend.
+window.NOVA_API_BASE = "https://nova-ai-backend-f2gk.onrender.com";
