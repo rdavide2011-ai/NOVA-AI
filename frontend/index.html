@@ -1,0 +1,1964 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07030d">
+<title>NOVA AI 1.6 — Cloud</title>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #07030d;
+  --purple: #b35cff;
+  --muted: #9f90b2;
+  --line: rgba(185,105,255,.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: var(--bg);
+  color: #faf5ff;
+}
+
+body {
+  background:
+    radial-gradient(
+      ellipse at 50% 27%,
+      rgba(95,23,155,.23),
+      transparent 48%
+    ),
+    #07030d;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #dba4ff;
+  outline-offset: 3px;
+}
+
+.app {
+  width: 100%;
+  max-width: 520px;
+  min-height: 100dvh;
+  margin: auto;
+  padding:
+    max(20px,env(safe-area-inset-top))
+    19px
+    max(20px,env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg,#8734bf,#261035);
+  border: 1px solid #9e58c567;
+  box-shadow: 0 0 21px #9a36ed40;
+  font-size: 23px;
+}
+
+.brand-name {
+  font-weight: 800;
+  font-size: 23px;
+  letter-spacing: 2px;
+}
+
+.brand-name span {
+  color: #c178ff;
+}
+
+.version {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  padding: 8px 11px;
+  border-radius: 20px;
+  color: #c5b2d5;
+  border: 1px solid #66487d79;
+  background: #25152f9a;
+}
+
+.online {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c378ff;
+  box-shadow: 0 0 9px #c378ff;
+}
+
+.island {
+  width: min(100%,340px);
+  min-height: 64px;
+  margin: 23px auto 0;
+  padding: 10px 16px;
+  border: 1px solid #ae55e8b6;
+  border-radius: 35px;
+  background:
+    radial-gradient(
+      ellipse at 90% 100%,
+      #5b178e55,
+      transparent 60%
+    ),
+    #040206;
+  box-shadow: 0 0 30px #9624e934;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  text-align: left;
+  transition: min-height .3s,border-radius .3s;
+}
+
+.island.expanded {
+  min-height: 105px;
+  border-radius: 29px;
+}
+
+.mini-orb {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 28% 20%,
+      #fff,#f0b6ff 11%,transparent 44%
+    ),
+    radial-gradient(
+      circle at 65% 75%,
+      #29044d,#a331ed 60%,#dc86ff
+    );
+  box-shadow: 0 0 18px #ba59ff;
+  animation: float 2.5s ease-in-out infinite;
+}
+
+.island-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.island-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.island-detail {
+  display: none;
+  margin-top: 7px;
+  font-size: 11px;
+  color: #a995be;
+  line-height: 1.4;
+}
+
+.island.expanded .island-detail {
+  display: block;
+}
+
+.island-bars {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  height: 30px;
+}
+
+.island-bars i {
+  width: 3px;
+  height: 5px;
+  background: #cb80ff;
+  border-radius: 5px;
+  box-shadow: 0 0 8px #b04cff;
+}
+
+.island-caption {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: #746581;
+  margin-top: 10px;
+}
+
+.intro {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.overline {
+  font-size: 10px;
+  letter-spacing: 2.8px;
+  color: #ad99c0;
+}
+
+.headline {
+  margin-top: 10px;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.headline span {
+  color: #d596ff;
+}
+
+.hero {
+  position: relative;
+  height: 310px;
+  flex-shrink: 0;
+}
+
+#orbCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+.orb-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 7px 13px;
+  font-size: 10px;
+  color: #c1afd1;
+  border: 1px solid #8d51b154;
+  border-radius: 25px;
+  background: #20112de8;
+  pointer-events: none;
+}
+
+.orb-caption::before {
+  content: "●";
+  margin-right: 7px;
+  color: #c17bff;
+}
+
+.status {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.status-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px #b94fff55;
+}
+
+.status-description {
+  margin-top: 9px;
+  font-size: 11px;
+  color: #9a88ac;
+}
+
+.wave {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  height: 44px;
+  margin-top: 7px;
+}
+
+.wave i {
+  width: 3px;
+  height: 5px;
+  border-radius: 6px;
+  background: linear-gradient(#f0c7ff,#9131ef);
+  box-shadow: 0 0 7px #a93dff;
+}
+
+.chat-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  font-size: 12px;
+}
+
+.chat-title strong {
+  color: #e2d5ef;
+}
+
+.chat-title small {
+  font-size: 10px;
+  color: #9c89ac;
+}
+
+.chat {
+  flex: 1;
+  min-height: 125px;
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 3px 1px 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #55346a transparent;
+}
+
+.message {
+  max-width: 94%;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  animation: enter .25s ease;
+}
+
+.message.ai {
+  align-self: flex-start;
+  display: flex;
+  gap: 12px;
+  border-radius: 21px;
+  border: 1px solid #b584e53b;
+  background: linear-gradient(
+    135deg,#3c254cbd,#160d21ed
+  );
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid #a466ca7c;
+  background: linear-gradient(
+    135deg,#79489c,#291434
+  );
+  font-size: 21px;
+}
+
+.message-name {
+  margin-bottom: 5px;
+  color: #dca5ff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.message.user {
+  align-self: flex-end;
+  width: fit-content;
+  max-width: 88%;
+  border-radius: 19px 19px 6px 19px;
+  background: linear-gradient(
+    135deg,#8928d0,#4e1379
+  );
+  border: 1px solid #c16dff99;
+}
+
+.composer {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+  height: 54px;
+  border-radius: 18px;
+  border: 1px solid #aa69d16c;
+  background: #25182fe9;
+  color: #fff;
+  outline: none;
+  padding: 0 15px;
+  font-size: 13px;
+}
+
+.composer input::placeholder {
+  color: #9483a5;
+}
+
+.composer input:focus {
+  border-color: #cc86ff;
+}
+
+.icon-btn {
+  flex-shrink: 0;
+  width: 53px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  border: 1px solid #a96bcd75;
+  background: #271732;
+}
+
+.icon-btn.send {
+  background: linear-gradient(
+    135deg,#d17cff,#8d2ce2,#6716b4
+  );
+  box-shadow: 0 0 19px #9b35ef55;
+}
+
+.icon-btn.recording {
+  background: #9e286e;
+  border-color: #ff95c6;
+}
+
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: white;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.action {
+  padding: 12px 5px;
+  border-radius: 15px;
+  border: 1px solid #9054b361;
+  background: #271831c9;
+  font-size: 11px;
+}
+
+.action.primary {
+  background: #60248c9c;
+  border-color: #aa58e5a6;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+footer {
+  text-align: center;
+  margin-top: 18px;
+  color: #766784;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media(max-width:390px) {
+  .app {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .hero {
+    height: 265px;
+  }
+
+  .brand-name {
+    font-size: 20px;
+  }
+
+  .action {
+    font-size: 10px;
+  }
+}
+
+@media(max-height:770px) {
+  .app {
+    padding-top: 12px;
+  }
+
+  .island {
+    margin-top: 13px;
+  }
+
+  .intro {
+    margin-top: 12px;
+  }
+
+  .hero {
+    height: 215px;
+  }
+
+  .wave {
+    height: 30px;
+  }
+
+  .chat-title {
+    margin-top: 7px;
+  }
+
+  .chat {
+    max-height: 160px;
+  }
+
+  footer {
+    margin-top: 10px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .mini-orb, .message {
+    animation: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="app">
+
+<header class="header">
+  <div class="brand">
+    <div class="brand-icon">✦</div>
+    <div class="brand-name">
+      NOVA <span>AI</span>
+    </div>
+  </div>
+
+  <div class="version">
+    <span class="online"></span>
+    CLOUD 1.6
+  </div>
+</header>
+
+<button class="island" id="island"
+  aria-expanded="false"
+  aria-label="Espandi Dynamic Island simulata">
+
+  <div class="mini-orb"></div>
+
+  <div class="island-info">
+    <div class="island-title" id="islandTitle">
+      NOVA pronta
+    </div>
+    <div class="island-detail">
+      Anteprima interattiva.
+      La Dynamic Island reale richiede
+      un'app iOS nativa.
+    </div>
+  </div>
+
+  <div class="island-bars" id="islandBars">
+    <i></i><i></i><i></i><i></i><i></i>
+  </div>
+</button>
+
+<div class="island-caption">
+  ANTEPRIMA INTERATTIVA · NON NATIVA
+</div>
+
+<div class="intro">
+  <div class="overline">
+    ASSISTENTE PERSONALE
+  </div>
+  <div class="headline">
+    L'intelligenza ha una
+    <span>nuova forma.</span>
+  </div>
+</div>
+
+<section class="hero">
+  <canvas id="orbCanvas"
+    aria-label="Sfera luminosa NOVA">
+  </canvas>
+
+  <div class="orb-caption">
+    NUCLEO NOVA · FAST VOICE ENGINE
+  </div>
+</section>
+
+<section class="status">
+  <div class="status-title" id="statusTitle">
+    NOVA È PRONTA
+  </div>
+
+  <div class="status-description"
+    id="statusDescription">
+    Scrivi un messaggio o attiva il microfono
+  </div>
+
+  <div class="wave" id="wave">
+    <i></i><i></i><i></i><i></i><i></i>
+    <i></i><i></i><i></i><i></i><i></i>
+    <i></i><i></i><i></i><i></i><i></i>
+    <i></i><i></i>
+  </div>
+</section>
+
+<div class="chat-title">
+  <strong>✦ &nbsp; Conversazione</strong>
+  <small>CHAT AI · VOCE</small>
+</div>
+
+<section class="chat" id="chat"
+  aria-label="Conversazione NOVA"
+  aria-live="polite">
+
+  <div class="message ai">
+    <div class="avatar">✦</div>
+    <div>
+      <div class="message-name">NOVA AI</div>
+      Ciao! Sono NOVA. Ora posso rispondere con un modello AI cloud anche quando il computer è spento.
+    </div>
+  </div>
+
+</section>
+
+<div class="composer">
+  <input
+    id="messageInput"
+    type="text"
+    placeholder="Chiedi qualcosa a NOVA..."
+    autocomplete="off"
+    aria-label="Messaggio">
+
+  <button class="icon-btn send" id="sendBtn"
+    aria-label="Invia messaggio">
+    <svg viewBox="0 0 24 24">
+      <path d="M22 2 11 13"/>
+      <path d="m22 2-7 20-4-9-9-4Z"/>
+    </svg>
+  </button>
+
+  <button class="icon-btn" id="micBtn"
+    aria-label="Microfono">
+    <svg viewBox="0 0 24 24">
+      <rect x="9" y="2"
+        width="6" height="13" rx="3"/>
+      <path d="M5 10v2a7 7 0 0 0 14 0v-2"/>
+      <path d="M12 19v3M8 22h8"/>
+    </svg>
+  </button>
+</div>
+
+<div class="actions">
+  <button class="action primary" id="demoBtn">
+    ✦ Prova NOVA
+  </button>
+  <button class="action" id="voiceBtn">
+    🔊 Voce attiva
+  </button>
+  <button class="action" id="stopBtn">
+    ■ Ferma
+  </button>
+</div>
+
+<footer>
+  NOVA AI · 1.6 · CLOUD
+</footer>
+
+</main>
+
+<script src="config.js"></script>
+<script>
+"use strict";
+
+/* ELEMENTI */
+
+const $ = id => document.getElementById(id);
+
+const canvas = $("orbCanvas");
+const ctx = canvas.getContext("2d");
+
+const chat = $("chat");
+const input = $("messageInput");
+const micBtn = $("micBtn");
+
+const waveBars =
+  [...document.querySelectorAll("#wave i")];
+
+const islandBars =
+  [...document.querySelectorAll("#islandBars i")];
+
+const SpeechRecognitionClass =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+const TAU = Math.PI * 2;
+
+const API_BASE = (window.NOVA_API_BASE || "").replace(/\/$/, "");
+const endpoint = path => API_BASE + path;
+let conversation = [];
+let cloudVoiceAvailable = false;
+let aiRequestController = null;
+let browserSpeech = null;
+async function checkBackend() {
+  try {
+    const response = await fetch(endpoint("/api/status"), {signal:AbortSignal.timeout(20000)});
+    if (!response.ok) throw Error("HTTP " + response.status);
+    const data = await response.json();
+    cloudVoiceAvailable = !!data.voice_available;
+    $("statusDescription").textContent = data.ai_available ? "Assistente cloud collegato" : "Server collegato: chiave AI non configurata";
+  } catch(error) {
+    console.warn("Connessione backend:",error);
+    $("statusDescription").textContent = "Backend cloud non ancora disponibile";
+  }
+}
+checkBackend();
+async function askAI(message,signal) {
+  const response = await fetch(endpoint("/api/chat"), {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({message, history:conversation.slice(-12)}), signal
+  });
+  const data = await response.json().catch(()=>({}));
+  if (!response.ok) throw Error(data.error || ("Server HTTP " + response.status));
+  if (!data.reply) throw Error("Risposta vuota");
+  return data.reply;
+}
+function browserSpeak(text,token) {
+  if (!window.speechSynthesis) {
+    addMessage("Sintesi vocale non disponibile su questo dispositivo.","ai");
+    setMode("idle");
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang="it-IT"; utter.rate=1.04;
+  const voices = speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith("it"));
+  if (voices.length) utter.voice=voices[0];
+  browserSpeech=utter;
+  utter.onstart=()=>{if(token===voiceToken)setMode("speaking");};
+  utter.onend=()=>{if(token===voiceToken){browserSpeech=null;setMode("idle");}};
+  utter.onerror=()=>{if(token===voiceToken){browserSpeech=null;setMode("idle");}};
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+
+
+let mode = "idle";
+let voiceEnabled = true;
+let energy = 0;
+
+let currentAudio = null;
+let currentURL = null;
+let currentEnvelope = null;
+
+let voiceToken = 0;
+let replyToken = 0;
+
+let controllers = [];
+
+let microphoneStream = null;
+let micContext = null;
+let micSource = null;
+let micAnalyser = null;
+let micSamples = null;
+let recognition = null;
+let listening = false;
+
+let width = 350;
+let height = 310;
+
+/* STATO INTERFACCIA */
+
+function setMode(next) {
+  mode = next;
+
+  const descriptions = {
+    idle: [
+      "NOVA È PRONTA",
+      "Scrivi un messaggio o attiva il microfono",
+      "NOVA pronta"
+    ],
+    listening: [
+      "TI STO ASCOLTANDO",
+      "Parla, ti sto seguendo",
+      "In ascolto"
+    ],
+    thinking: [
+      "STO ELABORANDO",
+      "Preparo la prima frase",
+      "Elaborazione"
+    ],
+    speaking: [
+      "NOVA STA PARLANDO",
+      "Voce Nicola · Audio progressivo",
+      "NOVA parla"
+    ]
+  };
+
+  const values = descriptions[next] ||
+    descriptions.idle;
+
+  $("statusTitle").textContent = values[0];
+  $("statusDescription").textContent = values[1];
+  $("islandTitle").textContent = values[2];
+}
+
+/* ISLAND SIMULATA */
+
+$("island").addEventListener("click", () => {
+  const element = $("island");
+  const expanded =
+    element.classList.toggle("expanded");
+
+  element.setAttribute(
+    "aria-expanded",
+    String(expanded)
+  );
+});
+
+/* CHAT */
+
+function addMessage(text, sender = "ai") {
+  const element = document.createElement("div");
+  element.className = "message " + sender;
+
+  if (sender === "user") {
+    element.textContent = text;
+  } else {
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = "✦";
+
+    const content = document.createElement("div");
+
+    const name = document.createElement("div");
+    name.className = "message-name";
+    name.textContent = "NOVA AI";
+
+    const body = document.createElement("div");
+    body.textContent = text;
+
+    content.append(name, body);
+    element.append(avatar, content);
+  }
+
+  chat.appendChild(element);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* RISPOSTE DIMOSTRATIVE */
+
+function demoReply(text) {
+  const q = text.toLowerCase();
+
+  if (/\b(ciao|salve|buongiorno)\b/.test(q)) {
+    return "Ciao! Sono Nova. Come posso aiutarti oggi?";
+  }
+
+  if (
+    q.includes("chi sei") ||
+    q.includes("come ti chiami")
+  ) {
+    return "Sono Nova, il tuo assistente personale. " +
+      "Adesso posso parlare con una voce italiana " +
+      "e riprodurre le frasi in modo progressivo.";
+  }
+
+  if (/\b(ora|ore|orario)\b/.test(q)) {
+    return "Sono le " +
+      new Date().toLocaleTimeString("it-IT", {
+        hour: "2-digit",
+        minute: "2-digit"
+      }) + ".";
+  }
+
+  if (
+    q.includes("che giorno") ||
+    q.includes("data")
+  ) {
+    return "Oggi è " +
+      new Date().toLocaleDateString("it-IT", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }) + ".";
+  }
+
+  return "Ho ricevuto il tuo messaggio. " +
+    "Questa è una versione dimostrativa di Nova. " +
+    "La voce è già funzionante, mentre il modello " +
+    "di intelligenza artificiale deve ancora " +
+    "essere collegato.";
+}
+
+/* DIVISIONE DEL TESTO IN FRASI */
+
+function splitText(text) {
+  const sentences =
+    text.match(/[^.!?]+[.!?]*\s*/g) || [text];
+
+  const result = [];
+
+  for (const sentence of sentences) {
+    const clean = sentence.trim();
+    if (!clean) continue;
+
+    if (clean.length <= 180) {
+      result.push(clean);
+      continue;
+    }
+
+    const words = clean.split(/\s+/);
+    let part = "";
+
+    for (const word of words) {
+      if (
+        part &&
+        (part + " " + word).length > 140
+      ) {
+        result.push(part);
+        part = word;
+      } else {
+        part += (part ? " " : "") + word;
+      }
+    }
+
+    if (part) result.push(part);
+  }
+
+  return result;
+}
+
+/* ANALISI AMPIEZZA WAV */
+
+function wavEnvelope(buffer) {
+  const view = new DataView(buffer);
+
+  if (
+    view.byteLength < 44 ||
+    String.fromCharCode(
+      ...new Uint8Array(buffer, 0, 4)
+    ) !== "RIFF"
+  ) {
+    return null;
+  }
+
+  let position = 12;
+  let dataOffset = -1;
+  let dataSize = 0;
+
+  let channels = 1;
+  let rate = 24000;
+  let bits = 16;
+  let format = 1;
+
+  while (position + 8 <= view.byteLength) {
+    const id = String.fromCharCode(
+      view.getUint8(position),
+      view.getUint8(position + 1),
+      view.getUint8(position + 2),
+      view.getUint8(position + 3)
+    );
+
+    const length =
+      view.getUint32(position + 4, true);
+
+    const start = position + 8;
+
+    if (start + length > view.byteLength) {
+      return null;
+    }
+
+    if (id === "fmt " && length >= 16) {
+      format = view.getUint16(start, true);
+      channels = view.getUint16(start + 2, true);
+      rate = view.getUint32(start + 4, true);
+      bits = view.getUint16(start + 14, true);
+    }
+
+    if (id === "data") {
+      dataOffset = start;
+      dataSize = length;
+    }
+
+    position =
+      start + length + (length % 2);
+  }
+
+  if (
+    format !== 1 ||
+    bits !== 16 ||
+    channels < 1 ||
+    !rate ||
+    dataOffset < 0
+  ) {
+    return null;
+  }
+
+  const frameSize = channels * 2;
+  const totalFrames =
+    Math.floor(dataSize / frameSize);
+
+  const blockFrames =
+    Math.max(1, Math.round(rate * .025));
+
+  const values = [];
+  let peak = 0;
+
+  for (
+    let frame = 0;
+    frame < totalFrames;
+    frame += blockFrames
+  ) {
+    let sum = 0;
+    let count = 0;
+
+    const end = Math.min(
+      totalFrames,
+      frame + blockFrames
+    );
+
+    for (let i = frame; i < end; i++) {
+      for (let c = 0; c < channels; c++) {
+        const offset =
+          dataOffset +
+          (i * channels + c) * 2;
+
+        const value =
+          view.getInt16(offset, true) / 32768;
+
+        sum += value * value;
+        count++;
+      }
+    }
+
+    const rms =
+      Math.sqrt(sum / Math.max(1, count));
+
+    values.push(rms);
+    peak = Math.max(peak, rms);
+  }
+
+  return {
+    values,
+    step: blockFrames / rate,
+    peak: Math.max(.01, peak)
+  };
+}
+
+/* RISORSE AUDIO */
+
+function releaseAudio() {
+  if (currentAudio) {
+    currentAudio.onended = null;
+    currentAudio.onerror = null;
+    currentAudio.pause();
+    currentAudio.removeAttribute("src");
+    currentAudio = null;
+  }
+
+  if (currentURL) {
+    URL.revokeObjectURL(currentURL);
+    currentURL = null;
+  }
+
+  currentEnvelope = null;
+}
+
+function stopVoice() {
+  voiceToken++;
+
+  for (const controller of controllers) {
+    controller.abort();
+  }
+
+  controllers = [];
+  releaseAudio();
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  browserSpeech=null;
+}
+
+/* GENERAZIONE DI UNA FRASE */
+
+async function requestSegment(text, token) {
+  const controller = new AbortController();
+  controllers.push(controller);
+
+  try {
+    const response = await fetch(endpoint("/api/voice"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text }),
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      const detail = await response.text();
+
+      throw new Error(
+        "HTTP " + response.status +
+        " " + detail.slice(0, 200)
+      );
+    }
+
+    const buffer = await response.arrayBuffer();
+
+    if (token !== voiceToken) {
+      return null;
+    }
+
+    const envelope = wavEnvelope(buffer);
+
+    const blob = new Blob(
+      [buffer],
+      { type: "audio/wav" }
+    );
+
+    return {
+      blob,
+      envelope,
+      generationMs: Number(
+        response.headers.get(
+          "X-Nova-Generation-Ms"
+        )
+      ) || null
+    };
+
+  } finally {
+    controllers = controllers.filter(
+      item => item !== controller
+    );
+  }
+}
+
+/* RIPRODUZIONE DI UN SEGMENTO */
+
+function playSegment(segment, token) {
+  return new Promise((resolve, reject) => {
+    if (token !== voiceToken) {
+      resolve();
+      return;
+    }
+
+    releaseAudio();
+
+    const url = URL.createObjectURL(segment.blob);
+    const audio = new Audio(url);
+
+    currentURL = url;
+    currentAudio = audio;
+    currentEnvelope = segment.envelope;
+
+    let settled = false;
+
+    const finish = error => {
+      if (settled) return;
+      settled = true;
+
+      if (error) reject(error);
+      else resolve();
+    };
+
+    audio.onended = () => finish();
+
+    audio.onerror = () => {
+      finish(
+        new Error("Impossibile riprodurre il WAV.")
+      );
+    };
+
+    audio.play().catch(finish);
+  });
+}
+
+/* VOCE PROGRESSIVA */
+
+async function speak(text) {
+  stopVoice();
+
+  if (!voiceEnabled) {
+    setMode("idle");
+    return;
+  }
+
+  const token = voiceToken;
+  if (!cloudVoiceAvailable) {browserSpeak(text,token);return;}
+  const segments = splitText(text);
+
+  if (!segments.length) {
+    setMode("idle");
+    return;
+  }
+
+  setMode("thinking");
+
+  /*
+    Avviamo subito la generazione delle frasi.
+
+    Il server le elabora una alla volta
+    per proteggere il modello Kokoro.
+
+    Appena è disponibile la prima frase,
+    cominciamo a riprodurla.
+  */
+
+  const pending = segments.map(segmentText =>
+    requestSegment(segmentText, token)
+      .then(value => ({
+        ok: true,
+        value
+      }))
+      .catch(error => ({
+        ok: false,
+        error
+      }))
+  );
+
+  try {
+    for (let i = 0; i < pending.length; i++) {
+      const result = await pending[i];
+
+      if (token !== voiceToken) return;
+
+      if (!result.ok) {
+        throw result.error;
+      }
+
+      if (!result.value) return;
+
+      const segment = result.value;
+
+      if (i === 0 && segment.generationMs) {
+        console.log(
+          "NOVA - prima frase generata in",
+          segment.generationMs,
+          "millisecondi"
+        );
+      }
+
+      setMode("speaking");
+      await playSegment(segment, token);
+
+      if (token !== voiceToken) return;
+    }
+
+    if (token !== voiceToken) return;
+
+    releaseAudio();
+    setMode(listening ? "listening" : "idle");
+
+  } catch (error) {
+    if (token !== voiceToken) return;
+
+    console.error("NOVA voice:", error);
+
+    stopVoice();
+    setMode("idle");
+
+    if (error.name === "AbortError") return;
+
+    let detail = error.message;
+
+    if (error.name === "NotAllowedError") {
+      detail =
+        "Il browser ha bloccato la riproduzione. " +
+        "Interagisci con la pagina e riprova.";
+    }
+
+    addMessage(
+      "Errore voce Nicola: " + detail,
+      "ai"
+    );
+  }
+}
+
+/* CHAT CLOUD */
+async function send(text) {
+  text=text.trim();
+  if (!text) return;
+  replyToken++;
+  const token=replyToken;
+  stopVoice(); stopMic();
+  if(aiRequestController)aiRequestController.abort();
+  const controller=new AbortController();
+  aiRequestController=controller;
+  addMessage(text,"user"); input.value="";
+  setMode("thinking");
+  try {
+    const answer=await askAI(text,controller.signal);
+    if(token!==replyToken)return;
+    conversation.push({role:"user",text});
+    conversation.push({role:"model",text:answer});
+    conversation=conversation.slice(-16);
+    addMessage(answer,"ai");
+    speak(answer);
+  } catch(error) {
+    if(token!==replyToken||error.name==="AbortError")return;
+    setMode("idle");
+    addMessage("Non riesco a rispondere: "+error.message,"ai");
+  } finally {
+    if(aiRequestController===controller)aiRequestController=null;
+  }
+}
+$("sendBtn").addEventListener("click",()=>send(input.value));
+input.addEventListener("keydown",e=>{if(e.key==="Enter")send(input.value)});
+$("demoBtn").addEventListener("click",()=>{
+  replyToken++;
+  if(aiRequestController)aiRequestController.abort();
+  stopMic();
+  const text="Ciao! Sono Nova, il tuo assistente digitale. Posso parlare e rispondere con un'intelligenza artificiale cloud.";
+  addMessage(text,"ai");
+  speak(text);
+});
+
+/* CONTROLLI */
+
+$("voiceBtn").addEventListener("click", () => {
+  voiceEnabled = !voiceEnabled;
+
+  $("voiceBtn").textContent = voiceEnabled
+    ? "🔊 Voce attiva"
+    : "🔇 Voce spenta";
+
+  if (!voiceEnabled) {
+    stopVoice();
+    setMode("idle");
+  }
+});
+
+$("stopBtn").addEventListener("click", () => {
+  replyToken++;
+  if(aiRequestController)aiRequestController.abort();
+  stopVoice();
+  stopMic();
+  setMode("idle");
+});
+
+/* MICROFONO */
+
+function stopMic() {
+  listening = false;
+  micBtn.classList.remove("recording");
+
+  if (recognition) {
+    const previous = recognition;
+    recognition = null;
+
+    previous.onresult = null;
+    previous.onend = null;
+    previous.onerror = null;
+
+    try {
+      previous.stop();
+    } catch (_) {}
+  }
+
+  if (micSource) {
+    micSource.disconnect();
+    micSource = null;
+  }
+
+  if (microphoneStream) {
+    microphoneStream.getTracks().forEach(
+      track => track.stop()
+    );
+    microphoneStream = null;
+  }
+
+  if (micContext) {
+    micContext.close().catch(() => {});
+    micContext = null;
+  }
+
+  micAnalyser = null;
+  micSamples = null;
+
+  if (mode === "listening") setMode("idle");
+}
+
+function startRecognition() {
+  if (!SpeechRecognitionClass) {
+    addMessage(
+      "Il microfono funziona, ma questo " +
+      "browser non supporta la trascrizione.",
+      "ai"
+    );
+    return;
+  }
+
+  try {
+    const rec = new SpeechRecognitionClass();
+    recognition = rec;
+
+    rec.lang = "it-IT";
+    rec.continuous = false;
+    rec.interimResults = true;
+
+    rec.onresult = event => {
+      let partial = "";
+      let finalText = "";
+
+      for (
+        let i = event.resultIndex;
+        i < event.results.length;
+        i++
+      ) {
+        const result = event.results[i];
+
+        partial += result[0].transcript;
+
+        if (result.isFinal) {
+          finalText += result[0].transcript;
+        }
+      }
+
+      if (partial.trim()) {
+        input.value = partial.trim();
+      }
+
+      if (finalText.trim()) {
+        stopMic();
+        send(finalText);
+      }
+    };
+
+    rec.onend = () => {
+      if (recognition === rec && listening) {
+        stopMic();
+      }
+    };
+
+    rec.onerror = event => {
+      console.warn(
+        "NOVA Recognition:",
+        event.error
+      );
+    };
+
+    rec.start();
+
+  } catch (error) {
+    recognition = null;
+
+    addMessage(
+      "Trascrizione non disponibile: " +
+      error.message,
+      "ai"
+    );
+  }
+}
+
+async function startMic() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    addMessage(
+      "Per il microfono serve HTTPS " +
+      "oppure localhost.",
+      "ai"
+    );
+    return;
+  }
+
+  try {
+    stopVoice();
+
+    microphoneStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true
+        }
+      });
+
+    const AC =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    if (!AC) {
+      throw new Error(
+        "Web Audio non supportato."
+      );
+    }
+
+    micContext = new AC();
+    await micContext.resume();
+
+    micAnalyser = micContext.createAnalyser();
+    micAnalyser.fftSize = 1024;
+
+    micSource =
+      micContext.createMediaStreamSource(
+        microphoneStream
+      );
+
+    micSource.connect(micAnalyser);
+
+    micSamples =
+      new Uint8Array(micAnalyser.fftSize);
+
+    listening = true;
+    micBtn.classList.add("recording");
+
+    setMode("listening");
+    startRecognition();
+
+  } catch (error) {
+    stopMic();
+
+    addMessage(
+      "Microfono non disponibile: " +
+      error.message,
+      "ai"
+    );
+  }
+}
+
+function readMicEnergy() {
+  if (
+    !listening ||
+    !micAnalyser ||
+    !micSamples
+  ) {
+    return 0;
+  }
+
+  micAnalyser.getByteTimeDomainData(
+    micSamples
+  );
+
+  let sum = 0;
+
+  for (const value of micSamples) {
+    const x = (value - 128) / 128;
+    sum += x * x;
+  }
+
+  return Math.min(
+    1,
+    Math.sqrt(sum / micSamples.length) * 10
+  );
+}
+
+micBtn.addEventListener("click", () => {
+  if (listening) stopMic();
+  else startMic();
+});
+
+/* ENERGIA VOCE */
+
+function readVoiceEnergy() {
+  if (
+    !currentAudio ||
+    currentAudio.paused ||
+    !currentEnvelope
+  ) {
+    return 0;
+  }
+
+  const index = Math.floor(
+    currentAudio.currentTime /
+    currentEnvelope.step
+  );
+
+  const value =
+    currentEnvelope.values[index] || 0;
+
+  const normalized =
+    value / currentEnvelope.peak;
+
+  return Math.min(
+    1,
+    Math.pow(normalized, .75)
+  );
+}
+
+/* CANVAS */
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(
+    window.devicePixelRatio || 1,
+    2
+  );
+
+  width = rect.width;
+  height = rect.height;
+
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+resizeCanvas();
+
+function circle(x,y,r) {
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,TAU);
+}
+
+const particles = Array.from(
+  { length: 48 },
+  () => ({
+    angle: Math.random() * TAU,
+    distance: .9 + Math.random() * .7,
+    size: .5 + Math.random(),
+    speed: .08 + Math.random() * .3
+  })
+);
+
+/* SFERA VIOLA */
+
+function animate(time) {
+  const t = time * .001;
+
+  let target = 0;
+
+  if (mode === "listening") {
+    target = readMicEnergy();
+  } else if (
+    currentAudio &&
+    !currentAudio.paused
+  ) {
+    target = readVoiceEnergy();
+  } else if (mode === "speaking" && browserSpeech) {
+    target=.2+.35*Math.abs(Math.sin(t*11));
+  } else if (mode === "thinking") {
+    target =
+      .12 + Math.sin(t * 3) ** 2 * .10;
+  }
+
+  energy += (target - energy) * .19;
+
+  ctx.clearRect(0,0,width,height);
+
+  const cx = width / 2;
+  const cy =
+    height / 2 - 5 +
+    Math.sin(t * 1.3) * 4;
+
+  const base = Math.min(
+    width * .31,
+    height * .34,
+    105
+  );
+
+  const radius =
+    base * (1 + energy * .13);
+
+  /* ALONE */
+
+  const halo = ctx.createRadialGradient(
+    cx,cy,base*.3,
+    cx,cy,base*2.1
+  );
+
+  halo.addColorStop(
+    0,"rgba(185,70,255,.30)"
+  );
+
+  halo.addColorStop(
+    .5,"rgba(120,25,215,.11)"
+  );
+
+  halo.addColorStop(
+    1,"rgba(85,15,150,0)"
+  );
+
+  ctx.fillStyle = halo;
+  circle(cx,cy,base*2.1);
+  ctx.fill();
+
+  /* ANELLI */
+
+  for (let i=0;i<4;i++) {
+    const r =
+      base*(1.2+i*.22) +
+      Math.sin(t*1.5-i*.6)*
+      (4+energy*14);
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      cx,cy,
+      r,
+      r*(.83+i*.025),
+      0,0,TAU
+    );
+
+    ctx.strokeStyle =
+      `rgba(186,78,255,${
+        .13+energy*.17
+      })`;
+
+    ctx.lineWidth =
+      i===1?1.3:.8;
+
+    ctx.shadowColor = "#a63bff";
+    ctx.shadowBlur = 8+energy*13;
+
+    ctx.stroke();
+  }
+
+  ctx.shadowBlur = 0;
+
+  /* PARTICELLE */
+
+  for (const p of particles) {
+    const a =
+      p.angle+t*p.speed;
+
+    const distance =
+      base*p.distance*1.5;
+
+    const x =
+      cx+Math.cos(a)*distance;
+
+    const y =
+      cy+Math.sin(a)*distance*.72;
+
+    ctx.globalAlpha =
+      .15+
+      Math.abs(Math.sin(t+a))*.4;
+
+    ctx.fillStyle = "#e3b3ff";
+    circle(x,y,p.size);
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+
+  /* CORPO */
+
+  ctx.save();
+
+  ctx.shadowColor = "#aa3aff";
+  ctx.shadowBlur =
+    26+energy*34;
+
+  const body = ctx.createRadialGradient(
+    cx-radius*.4,
+    cy-radius*.55,
+    radius*.04,
+    cx+radius*.22,
+    cy+radius*.25,
+    radius*1.45
+  );
+
+  body.addColorStop(0,"#fff5ff");
+  body.addColorStop(.08,"#efb0ff");
+  body.addColorStop(.28,"#bc4dff");
+  body.addColorStop(.5,"#8e20e9");
+  body.addColorStop(.73,"#4d087f");
+  body.addColorStop(.93,"#24033a");
+  body.addColorStop(1,"#b45bfa");
+
+  ctx.fillStyle = body;
+  circle(cx,cy,radius);
+  ctx.fill();
+
+  ctx.restore();
+
+  /* RIFLESSO */
+
+  ctx.save();
+
+  circle(cx,cy,radius);
+  ctx.clip();
+
+  const mx =
+    Math.sin(t*.65)*radius*.1;
+
+  const my =
+    Math.cos(t*.8)*radius*.08;
+
+  const reflection =
+    ctx.createRadialGradient(
+      cx-radius*.4+mx,
+      cy-radius*.5+my,
+      2,
+      cx-radius*.2+mx,
+      cy-radius*.3+my,
+      radius*.78
+    );
+
+  reflection.addColorStop(
+    0,"rgba(255,255,255,.95)"
+  );
+
+  reflection.addColorStop(
+    .12,"rgba(255,228,255,.72)"
+  );
+
+  reflection.addColorStop(
+    .35,"rgba(255,173,255,.24)"
+  );
+
+  reflection.addColorStop(
+    1,"rgba(255,255,255,0)"
+  );
+
+  ctx.fillStyle = reflection;
+
+  circle(
+    cx-radius*.2,
+    cy-radius*.2,
+    radius
+  );
+
+  ctx.fill();
+
+  /* MEMBRANA */
+
+  ctx.beginPath();
+
+  for(let i=0;i<=160;i++) {
+    const a=i/160*TAU;
+
+    const movement =
+      Math.sin(a*3+t*.8)*.022+
+      Math.cos(a*5-t*.6)*.012+
+      Math.sin(a*7+t*2)*
+      energy*.055;
+
+    const r=
+      radius*(.82+movement);
+
+    const x=cx+Math.cos(a)*r;
+    const y=cy+Math.sin(a)*r;
+
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.closePath();
+
+  ctx.strokeStyle =
+    "rgba(255,212,255,.2)";
+
+  ctx.lineWidth=1.2;
+  ctx.stroke();
+
+  ctx.restore();
+
+  /* CONTORNO */
+
+  circle(cx,cy,radius-.5);
+
+  ctx.strokeStyle =
+    "rgba(248,191,255,.72)";
+
+  ctx.lineWidth=1.3;
+  ctx.shadowColor="#ce78ff";
+  ctx.shadowBlur=13+energy*13;
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    cx,cy,radius+2,
+    .2*Math.PI,
+    .85*Math.PI
+  );
+
+  ctx.strokeStyle =
+    "rgba(233,157,255,.55)";
+
+  ctx.lineWidth=2.2;
+  ctx.stroke();
+
+  /* ONDE */
+
+  waveBars.forEach((bar,i)=>{
+    const distance=Math.abs(
+      i-(waveBars.length-1)/2
+    );
+
+    const baseHeight=
+      5+Math.max(
+        0,17-distance*3
+      );
+
+    const motion=Math.abs(
+      Math.sin(t*9+i*.7)
+    );
+
+    bar.style.height=
+      Math.min(
+        40,
+        baseHeight*.55+
+        energy*(12+motion*28)
+      )+"px";
+  });
+
+  islandBars.forEach((bar,i)=>{
+    bar.style.height=(
+      5+
+      energy*(
+        10+
+        Math.abs(
+          Math.sin(t*10+i)
+        )*16
+      )
+    )+"px";
+  });
+
+  requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+setMode("idle");
+
+canvas.addEventListener("click",()=>{
+  $("demoBtn").click();
+});
+</script>
+
+</body>
+</html>
