@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify, send_file, make_response
 app = Flask(__name__)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash").strip()
 ALLOWED_ORIGINS = {x.strip().rstrip("/") for x in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:5000,http://localhost:5000").split(",") if x.strip()}
 ENABLE_KOKORO = os.environ.get("ENABLE_KOKORO", "false").lower() == "true"
 VOICE = "im_nicola"
@@ -91,7 +91,7 @@ def chat():
     body = {
         "systemInstruction": {"parts": [{"text": "Sei NOVA, un assistente digitale in italiano. Rispondi in modo chiaro, accurato e naturale. Se un'informazione è incerta, dichiaralo. Per risposte vocali evita testi inutilmente lunghi."}]},
         "contents": contents,
-        "generationConfig": {"maxOutputTokens": 500, "temperature": 0.65}
+        "generationConfig": {"maxOutputTokens": 1200, "thinkingConfig": {"thinkingLevel": "low"}}
     }
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
     req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY}, method="POST")
